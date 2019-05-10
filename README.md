@@ -5,7 +5,8 @@ Arduino project using Adafruit Adalogger 32u4, adafruit RTC featherwing and Spar
 
 The shipped libraries need to be installed in the Arduino IDE to compile.
 
-The LightSensor folder contains the program for the Microcontroller.
+The LightSensor folder contains the program main arduino program for the Microcontroller.
+The file transfer tool folder contains a tool for usb transfer of files. A windows executable can be created with pyinstaller.
 
 The microcontroller makes a reading of the sensor, time from the RTC and battery voltage every 8sec and writes to the sd card after 8 readings to save on battery. The microcontroller put itself into deep spleep between readings.
 
