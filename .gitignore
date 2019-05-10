@@ -1,3 +1,7 @@
 .vscode
 .ipynb_checkpoints
 *.swp
+venv
+__pycache__
+build
+dist

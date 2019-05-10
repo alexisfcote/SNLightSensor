@@ -2,19 +2,8 @@ import serial
 import serial.tools.list_ports
 import time
 import sys
-import numpy as np
-import scipy
-import scipy.stats
 import re
-
-from matplotlib.backends.qt_compat import QtCore, QtWidgets, is_pyqt5
-if is_pyqt5():
-    from matplotlib.backends.backend_qt5agg import (
-        FigureCanvas, NavigationToolbar2QT as NavigationToolbar)
-else:
-    from matplotlib.backends.backend_qt4agg import (
-        FigureCanvas, NavigationToolbar2QT as NavigationToolbar)
-from matplotlib.figure import Figure
+from PyQt5 import QtCore, QtWidgets
 
 
 class ApplicationWindow(QtWidgets.QMainWindow):
@@ -22,6 +11,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         super().__init__()
         self._main = QtWidgets.QWidget()
         self.setCentralWidget(self._main)
+        self.setWindowTitle("Adalogger transfert tool")
         layout = QtWidgets.QVBoxLayout(self._main)
 
         self.text = QtWidgets.QLabel(
