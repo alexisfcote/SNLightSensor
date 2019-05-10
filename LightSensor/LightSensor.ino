@@ -117,7 +117,7 @@ void prepare_SD_file() {
     error();
   }
   last_file_size =  dataFile.size();
-  
+
   Serial.print(fileName);
   Serial.println(" Prepared");
 
@@ -165,16 +165,6 @@ void write_to_SD() {
   power_spi_disable();
 }
 
-void delete_files() {
-  for (int ii = 0; i <= 40; i++) {
-    String fileName = "";
-    fileName += String(i);
-    fileName += ".txt";
-    SD.remove(fileName);
-  }
-  SD.remove("Arecords.txt");
-}
-
 void power_all() {
   power_adc_enable(); // ADC converter
   power_spi_enable(); // SPI
@@ -186,6 +176,13 @@ void power_all() {
 }
 
 void power_down() {
+  // Disable USB clock
+  USBCON |= _BV(FRZCLK);
+  // Disable USB PLL
+  PLLCSR &= ~_BV(PLLE);
+  // Disable USB
+  USBCON &= ~_BV(USBE);
+
   // disable ADC
   ADCSRA = 0;
 
@@ -202,11 +199,69 @@ void power_down() {
 #endif
 }
 
+void printDirectory(File dir) {
+  while (true) {
+    File entry =  dir.openNextFile();
+    if (! entry) {
+      // no more files
+      break;
+    }
+    if (!entry.isDirectory()) {
+      Serial.print(entry.name());
+      Serial.print("\t\t");
+      Serial.println(entry.size(), DEC);
+    }
+    entry.close();
+  }
+}
+
+void upload_files() {
+  File root = SD.open("/");
+  printDirectory(root);
+  root.close();
+  
+  while (true) {
+    Serial.println("Waiting for choice");
+    delay(500);
+    if (Serial.available() > 0) {
+      String filetoopen = Serial.readString();
+      // Length (with one extra character for the null terminator)
+      int str_len = filetoopen.length() + 1; 
+      // Prepare the character array (the buffer) 
+      char char_array[str_len];
+      
+      // Copy it over 
+      filetoopen.toCharArray(char_array, str_len);
+      File dataFile = SD.open(char_array);
+      Serial.println("Received file to open");
+      Serial.println(filetoopen);
+
+      // if the file is available, write to it:
+      if (dataFile) {
+        Serial.println("Prepare Sending File");
+        while (dataFile.available()) {
+          Serial.write(dataFile.read());
+        }
+        Serial.println("Done");
+        dataFile.close();
+      }
+      // if the file isn't open, pop up an error:
+      else {
+        Serial.println("error opening " + filetoopen );
+      }
+    }
+  }
+
+}
+
 void setup() {
   power_all();
+  USBDevice.attach();
+  delay(1000);
 
   Serial.begin(9600);
-  delay(1000);  // wait for Serial to initialize
+  while (!Serial) { }  // wait for Serial to initialize
+  delay(500);
   Serial.println("Starting");
 
   Serial.println("Initializing RTC...");
@@ -236,11 +291,25 @@ void setup() {
     error();
   }
   Serial.println("card initialized.");
-  Serial.println("Deleting Files...");
-  delete_files();
+
+  // Check for pc connection to upload files
+  bool pc_connected = 0;
+  for (uint8_t i = 0; i <= 10; i++) {
+    Serial.println("Waiting for PC...");
+    if (Serial.available() > 0) {
+      Serial.println("PC Connected");
+      Serial.read();
+      pc_connected = 1;
+      break;
+    }
+    delay(1000);
+  }
+  if (pc_connected) upload_files();
+
+  Serial.println("No PC Connected");
 
   prepare_SD_file();
-
+      
   Serial.println("Going into low power mode");
   delay(100);
   // Power Saving
