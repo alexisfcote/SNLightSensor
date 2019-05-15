@@ -1,17 +1,15 @@
 import serial
+import serial.tools.list_ports
 import time
 import sys
 import numpy as np
 import scipy
 import scipy.stats
+from PyQt5 import QtCore, QtWidgets
 
-from matplotlib.backends.qt_compat import QtCore, QtWidgets, is_pyqt5
-if is_pyqt5():
-    from matplotlib.backends.backend_qt5agg import (
-        FigureCanvas, NavigationToolbar2QT as NavigationToolbar)
-else:
-    from matplotlib.backends.backend_qt4agg import (
-        FigureCanvas, NavigationToolbar2QT as NavigationToolbar)
+from matplotlib.backends.backend_qt5agg import (
+    FigureCanvas, NavigationToolbar2QT as NavigationToolbar)
+
 from matplotlib.figure import Figure
 
 
@@ -33,10 +31,14 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         super().__init__()
         self._main = QtWidgets.QWidget()
         self.setCentralWidget(self._main)
+        self.setWindowTitle("Spectral Monitor")
         layout = QtWidgets.QHBoxLayout(self._main)
-        self.ser = serial.Serial('COM5', 9600, timeout=0)
-
-
+        adafruit_ser_name = None
+        while adafruit_ser_name is None:
+            for ser in serial.tools.list_ports.comports(include_links=False):
+                if (ser.vid == 9114 and ser.pid == 32780):
+                    adafruit_ser_name = ser.device
+        self.ser = serial.Serial(adafruit_ser_name, 9600, timeout=0)
 
         dynamic_canvas = FigureCanvas(Figure(figsize=(5, 3)))
         intensity_canvas = FigureCanvas(Figure(figsize=(3, 3)))

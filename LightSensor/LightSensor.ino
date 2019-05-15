@@ -264,24 +264,6 @@ void setup() {
   delay(500);
   Serial.println("Starting");
 
-  Serial.println("Initializing RTC...");
-  delay(100);
-  if (! rtc.begin()) {
-    Serial.println("Couldn't find RTC");
-    error();
-  }
-
-  if (rtc.lostPower()) {
-    Serial.println("RTC lost power!");
-    error();
-  }
-
-  Serial.println("Initializing spectral sensor...");
-  delay(100);
-  power_twi_enable();
-  if (!sensor.isalive()) error();
-  if (sensor.begin(Wire, 3, 3) == 0) error();
-
   Serial.println("Initializing SD card...");
   delay(100);
 
@@ -309,6 +291,24 @@ void setup() {
   Serial.println("No PC Connected");
 
   prepare_SD_file();
+
+  Serial.println("Initializing spectral sensor...");
+  delay(100);
+  power_twi_enable();
+  if (!sensor.isalive()) error();
+  if (sensor.begin(Wire, 3, 3) == 0) error();
+
+  Serial.println("Initializing RTC...");
+  delay(100);
+  if (! rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+    error();
+  }
+
+  if (rtc.lostPower()) {
+    Serial.println("RTC lost power!");
+    error();
+  }
       
   Serial.println("Going into low power mode");
   delay(100);

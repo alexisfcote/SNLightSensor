@@ -115,7 +115,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
 
 if __name__ == "__main__":
-    qapp = QtWidgets.QApplication(sys.argv)
-    app = ApplicationWindow()
-    app.show()
-    qapp.exec_()
+    try:
+        qapp = QtWidgets.QApplication(sys.argv)
+        app = ApplicationWindow()
+        app.show()
+        qapp.exec_()
+    finally:
+        app.adafruit_ser.close()
