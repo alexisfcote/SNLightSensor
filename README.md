@@ -16,7 +16,7 @@ The 500mAh LiPo battery can last 1 day and 16 hours. The 2000mAh LiPo battery sh
 
 1 week of recordings amounts to about 1MB of data. The 32GB sd card should therefore provide virtually limitless record space.
 
-On power on the board checks if everything is in place. If something is missing (RTC, SD card or Spectral sensor) it rapidly blink indefinitely. Check the connection and restart the board by removing LiPo battery and usb power. The board will send initialization messages on the serial port (9600 baud) at boot. This can be used for diagnostic.
+On power on the board checks if everything is in place. If something is missing (RTC, SD card or Spectral sensor) it rapidly blink indefinitely. Check the connection and restart the board by removing LiPo battery and usb power. The board will send initialization messages on the serial port (9600 baud) at boot. This can be used for diagnostic. When running normally (after the ~30 sec boot period) the LED will double blink at interval of 8 sec.
 
 By programming the board with the AS7262 program (in the AS7262 folder), the spectral_monitor.py app can be used to make continuous reading and display of the sensor.
 
