@@ -260,7 +260,6 @@ void setup() {
   delay(1000);
 
   Serial.begin(9600);
-  while (!Serial) { }  // wait for Serial to initialize
   delay(500);
   Serial.println("Starting");
 
